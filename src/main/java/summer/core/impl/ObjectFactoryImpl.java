@@ -5,8 +5,8 @@ import summer.configurators.ObjectConfigurator;
 import summer.core.Context;
 import summer.core.ObjectFactory;
 import summer.configurators.ProxyConfigurator;
+import summer.core.annotations.InitMethod;
 
-import javax.annotation.PostConstruct;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class ObjectFactoryImpl implements ObjectFactory {
 
     private <T> void initialize(Class<T> implementation, T object) throws Exception {
         for (Method method : implementation.getMethods()) {
-            if (method.isAnnotationPresent(PostConstruct.class)) {
+            if (method.isAnnotationPresent(InitMethod.class)) {
                 method.invoke(object);
             }
         }

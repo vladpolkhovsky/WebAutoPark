@@ -18,6 +18,5 @@ public class Main {
 
     public static void main(String[] args) {
         Context context = Application.createContextFromConfigs(Configuration.class);
-
     }
 }

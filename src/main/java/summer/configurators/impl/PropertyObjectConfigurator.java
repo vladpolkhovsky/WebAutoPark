@@ -1,12 +1,13 @@
 package summer.configurators.impl;
 
-import jdk.nashorn.api.scripting.URLReader;
 import summer.core.annotations.Property;
 import lombok.SneakyThrows;
 import summer.configurators.ObjectConfigurator;
 import summer.core.Context;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Map;
@@ -21,7 +22,10 @@ public class PropertyObjectConfigurator implements ObjectConfigurator {
     @SneakyThrows
     public PropertyObjectConfigurator() {
         URL path = this.getClass().getClassLoader().getResource("application.properties");
-        Stream<String> lines = new BufferedReader(new URLReader(path)).lines();
+        if (path == null) {
+            throw new FileNotFoundException(String.format("File '%s' not found", "application.properties"));
+        }
+        Stream<String> lines = new BufferedReader(new InputStreamReader(path.openStream())).lines();
         properties = lines.map(line -> line.split("=")).collect(toMap(arr -> arr[0], arr -> arr[1]));
     }
 
