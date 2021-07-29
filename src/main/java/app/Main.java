@@ -5,6 +5,7 @@ import summer.config.ConfigurationClass;
 import summer.core.Context;
 import summer.core.annotations.Autowired;
 import summer.core.annotations.ClassForName;
+import summer.core.annotations.Property;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -35,9 +36,12 @@ public class Main {
 
     public static class NotDefaultKlaxon implements Klaxon {
 
+        @Property("NotDefaultKlaxonSound")
+        String sound;
+
         @Override
         public void voice() {
-            System.out.println("не бип, а кря");
+            System.out.println(sound);
         }
 
     }
