@@ -44,7 +44,7 @@ public class ObjectFactoryImpl implements ObjectFactory {
 
     private <T> T makeProxy(Class<T> implClass, T object) {
         for (ProxyConfigurator proxyConfigurator : proxyConfigurators) {
-            object = (T) proxyConfigurator.makeProxy(object, implClass);
+            object = (T) proxyConfigurator.makeProxy(object, implClass, context);
         }
         return object;
     }

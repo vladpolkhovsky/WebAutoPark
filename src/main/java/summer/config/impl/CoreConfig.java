@@ -2,8 +2,7 @@ package summer.config.impl;
 
 import summer.config.ConfigurationClass;
 import summer.configurators.ObjectConfigurator;
-import summer.configurators.impl.AutowiredObjectConfigurator;
-import summer.configurators.impl.PropertyObjectConfigurator;
+import summer.configurators.impl.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +13,11 @@ public class CoreConfig implements ConfigurationClass {
     @Override
     public void addConfigurations(Map<Class<?>, List<Class<?>>> configuration) {
         configuration.put(
-                ObjectConfigurator.class, Arrays.asList(AutowiredObjectConfigurator.class, PropertyObjectConfigurator.class)
+                ObjectConfigurator.class, Arrays.asList(
+                        AutowiredObjectConfigurator.class,
+                        PropertyObjectConfigurator.class,
+                        ClassForNameObjectConfigurator.class
+                )
         );
     }
 

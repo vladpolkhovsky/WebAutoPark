@@ -36,7 +36,8 @@ public class JavaConfig implements Config {
         manyVars.putAll(
                 oneVar.entrySet()
                 .stream()
-                .collect(Collectors.toMap(e -> e.getKey(), e -> Collections.singletonList(e.getValue())))
+                .collect(Collectors
+                        .toMap(e -> e.getKey(), e -> Collections.singletonList(e.getValue())))
         );
 
         return new Scanner() {
