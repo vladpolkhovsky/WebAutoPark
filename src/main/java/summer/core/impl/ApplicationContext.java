@@ -22,13 +22,16 @@ public class ApplicationContext implements Context {
 
     @Override
     public <T> T getObject(Class<? extends T> type) {
+        //Проверка кэша
         if (cache.containsKey(type)) {
             return (T)cache.get(type);
         }
+        //Получение реализации, если интерфейс
         Class<?> implementation = type;
         if (type.isInterface()) {
             implementation = config.getImplementation(type);
         }
+        //Создание и сохранение в кэше, если Singleton
         Object object = factory.createObject(implementation);
         if (implementation.isAnnotationPresent(Singleton.class)) {
             cache.put(type, object);

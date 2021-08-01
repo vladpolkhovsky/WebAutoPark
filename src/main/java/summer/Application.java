@@ -12,10 +12,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Содержит в себе контекст приложения. Отвечает за его создание.
+ */
 public class Application {
 
     private static Context context;
 
+    /**
+     * Создание и сохранение контекста из конфигурационных классов.
+     * @param configClasses клссы конфигурации
+     * @return контекст
+     */
+    @SafeVarargs
     public static Context createContextFromConfigs(Class<? extends ConfigurationClass>... configClasses) {
         if (context != null) {
             throw new RuntimeException("Context already exists");
@@ -25,7 +34,9 @@ public class Application {
 
         classes.add(CoreConfig.class);
         if (configClasses != null && configClasses.length > 0) {
-            classes.addAll(Arrays.asList(configClasses));
+            List<Class<? extends ConfigurationClass>> cfgList = Arrays.asList(configClasses);
+            cfgList.remove(CoreConfig.class);
+            classes.addAll(cfgList);
         }
 
         Config config = new JavaConfig(classes.toArray(new Class[0]));
@@ -39,10 +50,18 @@ public class Application {
         return context;
     }
 
+    /**
+     * Создание контекста по умолчанию
+     * @return контекст
+     */
     private static Context defaultContext() {
-        return createContextFromConfigs(CoreConfig.class);
+        return createContextFromConfigs();
     }
 
+    /**
+     * Получение контекста
+     * @return конеткст
+     */
     public static Context getContext() {
         if (context == null)
             context = defaultContext();

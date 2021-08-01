@@ -4,17 +4,10 @@ import summer.Application;
 import summer.config.ConfigurationClass;
 import summer.core.Context;
 import summer.core.annotations.Autowired;
-import summer.core.annotations.ClassForName;
 import summer.core.annotations.Property;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-/**
- * @author Evgeny Borisov
- */
 public class Main {
 
     public static class Configuration implements ConfigurationClass {
@@ -26,12 +19,10 @@ public class Main {
     }
 
     public static class DefaultKlaxon implements Klaxon {
-
         @Override
         public void voice() {
             System.out.println("Бип");
         }
-
     }
 
     public static class NotDefaultKlaxon implements Klaxon {
@@ -69,53 +60,20 @@ public class Main {
 
     }
 
-    public static class SimpleList extends AbstractList<Movable> {
-
-        private List<Movable> list = new ArrayList<>();
-
-        @Override
-        public boolean add(Movable movable) {
-            return list.add(movable);
-        }
-
-        @Override
-        public Movable get(int index) {
-            return list.get(index);
-        }
-
-        @Override
-        public int size() {
-            return list.size();
-        }
-    }
-
     public static class Trip {
 
-        @ClassForName("app.Main$SimpleList")
-        List<Movable> transports;
-
-        public Trip() {
-
-        }
-
-        void addTransport(Movable transport) {
-            transports.add(transport);
-        }
+        @Autowired
+        Movable transport;
 
         void start() {
-            for (int i = 0; i < transports.size(); i++) {
-                transports.get(i).move();
-            }
+            transport.move();
         }
 
     }
 
     public static void main(String[] args) {
-        System.out.println(SimpleList.class.getName());
         Context context = Application.createContextFromConfigs(Configuration.class);
         Trip trip = context.getObject(Trip.class);
-        trip.addTransport(context.getObject(Plane.class));
-        trip.addTransport(context.getObject(Car.class));
         trip.start();
     }
 }

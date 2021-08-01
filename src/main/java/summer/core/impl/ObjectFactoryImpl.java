@@ -22,6 +22,7 @@ public class ObjectFactoryImpl implements ObjectFactory {
     @SneakyThrows
     public ObjectFactoryImpl(Context context) {
         this.context = context;
+        //Сохранение всех конфигураторов
         for (Class<?> clazz : context.getConfig()
                 .getClassScanner().getSubTypesOf(ObjectConfigurator.class)) {
             objectConfigurators.add((ObjectConfigurator) clazz.getDeclaredConstructor().newInstance());
@@ -35,9 +36,13 @@ public class ObjectFactoryImpl implements ObjectFactory {
 
     @SneakyThrows
     public <T> T createObject(Class<T> implementation) {
+        //Создние объекта
         T object = create(implementation);
+        //нстройка при помощи конфигураторов
         configure(object);
+        //Вызов метода инциализации
         initialize(implementation, object);
+        //Проксирование
         object = makeProxy(implementation, object);
         return object;
     }

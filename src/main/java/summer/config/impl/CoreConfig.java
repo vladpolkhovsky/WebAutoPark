@@ -8,7 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class CoreConfig implements ConfigurationClass {
+/**
+ * Необходимый минимум для работы фреймворка. Подключается автоматически.
+ */
+public final class CoreConfig implements ConfigurationClass {
 
     @Override
     public void addConfigurations(Map<Class<?>, List<Class<?>>> configuration) {

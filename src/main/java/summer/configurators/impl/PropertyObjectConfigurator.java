@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toMap;
 
 public class PropertyObjectConfigurator implements ObjectConfigurator {
 
-    private Map<String, String> properties;
+    private final Map<String, String> properties;
 
     @SneakyThrows
     public PropertyObjectConfigurator() {

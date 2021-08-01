@@ -3,7 +3,6 @@ package summer.configurators.impl;
 import lombok.SneakyThrows;
 import summer.configurators.ObjectConfigurator;
 import summer.core.Context;
-import summer.core.annotations.Autowired;
 import summer.core.annotations.ClassForName;
 
 import java.lang.reflect.Field;
