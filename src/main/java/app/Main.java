@@ -1,22 +1,14 @@
 package app;
 
 import summer.Application;
-import summer.config.ConfigurationClass;
 import summer.core.Context;
 import summer.core.annotations.Autowired;
 import summer.core.annotations.Property;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
-
-    public static class Configuration implements ConfigurationClass {
-        @Override
-        public void addConfiguration(Map<Class<?>, Class<?>> configuration) {
-            configuration.put(Movable.class, Car.class);
-            configuration.put(Klaxon.class, NotDefaultKlaxon.class);
-        }
-    }
 
     public static class DefaultKlaxon implements Klaxon {
         @Override
@@ -72,8 +64,15 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Context context = Application.createContextFromConfigs(Configuration.class);
+        Context context = Application.getContext(makeConfig());
         Trip trip = context.getObject(Trip.class);
         trip.start();
+    }
+
+    private static Map<Class<?>, Class<?>> makeConfig() {
+        Map<Class<?>, Class<?>> config = new HashMap<>();
+        config.put(Movable.class, Car.class);
+        config.put(Klaxon.class, DefaultKlaxon.class);
+        return config;
     }
 }

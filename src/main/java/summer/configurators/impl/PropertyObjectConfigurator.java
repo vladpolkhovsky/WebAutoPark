@@ -1,9 +1,9 @@
 package summer.configurators.impl;
 
-import summer.core.annotations.Property;
 import lombok.SneakyThrows;
 import summer.configurators.ObjectConfigurator;
 import summer.core.Context;
+import summer.core.annotations.Property;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

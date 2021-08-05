@@ -10,19 +10,12 @@ public interface Context {
      * @param <T> параметр класса
      * @return настроенный объект
      */
-    <T> T getObject(Class<? extends T> type);
+    <T> T getObject(Class<T> type);
 
     /**
      * Получение конфигуации
      * @return конфигурация
      */
     Config getConfig();
-
-
-    /**
-     * Установка фабрики обхъектов.
-     * @param factory фабрика объекта
-     */
-    void setFactory(ObjectFactory factory);
 
 }

@@ -1,9 +1,9 @@
 package summer.configurators.impl;
 
-import summer.core.annotations.Autowired;
 import lombok.SneakyThrows;
 import summer.configurators.ObjectConfigurator;
 import summer.core.Context;
+import summer.core.annotations.Autowired;
 
 import java.lang.reflect.Field;
 

@@ -12,12 +12,12 @@ public interface Config {
      * @param target интерфейс
      * @return реализация интерфейса
      */
-    Class<?> getImplementation(Class<?> target);
+    <T> Class<? extends T> getImplementation(Class<T> target);
 
     /**
      * Вернёт объект сканнер
      * @return объект сканнер
      */
-    Scanner getClassScanner();
+    Scanner getScanner();
 
 }

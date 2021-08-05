@@ -2,12 +2,12 @@ package summer.core.impl;
 
 import lombok.SneakyThrows;
 import summer.configurators.ObjectConfigurator;
+import summer.configurators.ProxyConfigurator;
 import summer.core.Context;
 import summer.core.ObjectFactory;
-import summer.configurators.ProxyConfigurator;
 import summer.core.annotations.InitMethod;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +24,11 @@ public class ObjectFactoryImpl implements ObjectFactory {
         this.context = context;
         //Сохранение всех конфигураторов
         for (Class<?> clazz : context.getConfig()
-                .getClassScanner().getSubTypesOf(ObjectConfigurator.class)) {
+                .getScanner().getSubTypesOf(ObjectConfigurator.class)) {
             objectConfigurators.add((ObjectConfigurator) clazz.getDeclaredConstructor().newInstance());
         }
         for (Class<?> clazz : context.getConfig()
-                .getClassScanner().getSubTypesOf(ProxyConfigurator.class)) {
+                .getScanner().getSubTypesOf(ProxyConfigurator.class)) {
             proxyConfigurators.add((ProxyConfigurator) clazz.getDeclaredConstructor().newInstance());
         }
     }
