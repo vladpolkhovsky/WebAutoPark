@@ -9,6 +9,7 @@ public interface Config {
 
     /**
      * Возращает реализацию данного интерфейса
+     *
      * @param target интерфейс
      * @return реализация интерфейса
      */
@@ -16,6 +17,7 @@ public interface Config {
 
     /**
      * Вернёт объект сканнер
+     *
      * @return объект сканнер
      */
     Scanner getScanner();

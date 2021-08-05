@@ -9,6 +9,7 @@ public interface ProxyConfigurator {
 
     /**
      * Создание прокси
+     *
      * @param object целевой для проксирования объект
      * @param implementation целевая реализация
      * @param context контекст приложения

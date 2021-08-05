@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class ApplicationContext implements Context {
 
-    private final Scanner scanner;
-
     private final Config config;
 
     private final ObjectFactory factory;
@@ -20,8 +18,7 @@ public class ApplicationContext implements Context {
     private final Cache cache;
 
     public ApplicationContext(String packageToScan, Map<Class<?>, Class<?>> interfaceToImplementation) {
-        this.scanner = new ScannerImpl(packageToScan);
-        this.config = new JavaConfig(scanner, interfaceToImplementation);
+        this.config = new JavaConfig(new ScannerImpl(packageToScan), interfaceToImplementation);
         this.cache = new CacheImpl();
         this.factory = new ObjectFactoryImpl(this);
     }

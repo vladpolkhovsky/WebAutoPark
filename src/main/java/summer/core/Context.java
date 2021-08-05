@@ -6,6 +6,7 @@ public interface Context {
 
     /**
      * Создание объекта указанного класса. Причём будет выбранна реадизация из Config
+     *
      * @param type целевой класс
      * @param <T> параметр класса
      * @return настроенный объект
@@ -14,6 +15,7 @@ public interface Context {
 
     /**
      * Получение конфигуации
+     *
      * @return конфигурация
      */
     Config getConfig();
