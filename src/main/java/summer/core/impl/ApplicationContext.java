@@ -5,7 +5,6 @@ import summer.config.impl.JavaConfig;
 import summer.core.Cache;
 import summer.core.Context;
 import summer.core.ObjectFactory;
-import summer.core.Scanner;
 
 import java.util.Map;
 
