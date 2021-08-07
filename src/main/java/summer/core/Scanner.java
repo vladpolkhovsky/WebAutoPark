@@ -1,5 +1,7 @@
 package summer.core;
 
+import org.reflections.Reflections;
+
 import java.util.Set;
 
 public interface Scanner {
@@ -11,5 +13,7 @@ public interface Scanner {
      * @return Все реализации данного класса
      */
     <T> Set<Class<? extends T>> getSubTypesOf(Class<T> type);
+
+    Reflections getReflections();
 
 }

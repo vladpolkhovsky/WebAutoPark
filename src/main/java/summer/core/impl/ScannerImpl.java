@@ -17,4 +17,9 @@ public class ScannerImpl implements Scanner {
     public <T> Set<Class<? extends T>> getSubTypesOf(Class<T> type) {
         return reflections.getSubTypesOf(type);
     }
+
+    @Override
+    public Reflections getReflections() {
+        return reflections;
+    }
 }
