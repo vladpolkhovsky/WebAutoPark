@@ -20,7 +20,7 @@ public class CacheImpl implements Cache {
 
     @Override
     public <T> T get(Class<T> clazz) {
-        return (T)cache.get(clazz.getName());
+        return (T) cache.get(clazz.getName());
     }
 
     @Override

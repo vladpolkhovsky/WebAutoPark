@@ -14,7 +14,7 @@ public interface Cache {
      * Получить объект из кэша
      *
      * @param clazz класс объекта
-     * @param <T> параметр
+     * @param <T>   параметр
      * @return объект если он в кэше, иначе null
      */
     <T> T get(Class<T> clazz);

@@ -7,7 +7,7 @@ public interface ObjectConfigurator {
     /**
      * Создаёт прокси объекта
      *
-     * @param Object объект для проксирования
+     * @param Object  объект для проксирования
      * @param context контекст
      */
     void configure(Object Object, Context context);
