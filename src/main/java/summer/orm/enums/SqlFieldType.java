@@ -1,4 +1,4 @@
-package summer.orm;
+package summer.orm.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,7 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum SqlFieldType {
-
     INTEGER(Integer.class, "integer"),
     LONG(Long.class, "integer"),
     STRING(String.class, "varchar(255)");

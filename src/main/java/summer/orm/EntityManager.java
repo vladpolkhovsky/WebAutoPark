@@ -19,7 +19,7 @@ public interface EntityManager {
      *
      * @param object
      */
-    void save(Object object);
+    Long save(Object object);
 
 
     /**

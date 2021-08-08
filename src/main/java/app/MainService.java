@@ -1,5 +1,6 @@
 package app;
 
+import app.entity.PersonEntity;
 import summer.core.annotations.Autowired;
 import summer.core.annotations.InitMethod;
 import summer.orm.EntityManager;
@@ -11,7 +12,13 @@ public class MainService {
 
     @InitMethod
     public void main() {
-        System.out.println(entityManager);
+        PersonEntity personEntity = PersonEntity.builder()
+                .fname(System.currentTimeMillis() + "")
+                .sname(System.currentTimeMillis() + "")
+                .age(10)
+                .build();
+        Long id = entityManager.save(personEntity);
+        System.out.println(personEntity);
     }
 
 }
