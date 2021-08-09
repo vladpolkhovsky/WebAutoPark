@@ -3,6 +3,9 @@ package summer.orm.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Отвечает за идентефекацию типа поля в CREATE запросе
+ */
 @AllArgsConstructor
 @Getter
 public enum SqlFieldType {

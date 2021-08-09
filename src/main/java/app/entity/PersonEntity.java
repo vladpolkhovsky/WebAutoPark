@@ -1,14 +1,16 @@
 package app.entity;
 
-import lombok.Builder;
-import lombok.ToString;
+import lombok.*;
 import summer.orm.annotations.Column;
 import summer.orm.annotations.ID;
 import summer.orm.annotations.Table;
 
 @Table(name = "person")
 @Builder
+@Data
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PersonEntity {
 
     @ID

@@ -3,6 +3,9 @@ package summer.orm.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Патерн вставки значений в INSERT запрос
+ */
 @AllArgsConstructor
 @Getter
 public enum SqlFieldInsertPattern {
