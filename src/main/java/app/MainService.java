@@ -8,6 +8,7 @@ import summer.core.annotations.InitMethod;
 import summer.orm.EntityManager;
 import summer.threads.annotations.Async;
 
+import java.sql.Date;
 import java.util.List;
 
 public class MainService {
@@ -25,6 +26,7 @@ public class MainService {
                 .fname(System.currentTimeMillis() + "")
                 .sname(System.currentTimeMillis() + "")
                 .age(10)
+                .date(new Date(System.currentTimeMillis()))
                 .build();
         entityManager.save(personEntity);
 

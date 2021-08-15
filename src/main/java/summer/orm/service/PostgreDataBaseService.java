@@ -101,10 +101,12 @@ public class PostgreDataBaseService {
      */
     @InitMethod
     public void init() {
+        // java.lang.Long -> integer
         classToSql = Arrays.stream(SqlFieldType.values()).collect(Collectors.toMap(
                 sqlFieldType -> sqlFieldType.getType().getName(), SqlFieldType::getSqlType
         ));
 
+        // java.lang.Long -> %s, java.lang.String -> '%s'
         insertPatternByClass = Arrays.stream(SqlFieldType.values()).collect(Collectors.toMap(
                 sqlFieldType -> sqlFieldType.getType().getName(), SqlFieldType::getInsertPattern
         ));
@@ -144,6 +146,7 @@ public class PostgreDataBaseService {
         String idField = Arrays.stream(type.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(ID.class))
                 .findFirst().get().getName();
+
         String sql = String.format(CREATE_TABLE_SQL_PATTERN, tableName, idField, SEQ_NAME, makeFieldsSql(type));
         log.info("SQL -> {}", sql);
 
@@ -262,7 +265,12 @@ public class PostgreDataBaseService {
         return object;
     }
 
-
+    /**
+     * Подготовка полей объекта к вставке в таблицу 'values(%s, '%s') -> values(15, 'abc')'
+     *
+     * @param value объект
+     * @return массив значений для вставки
+     */
     @SneakyThrows
     private Object[] prepareValues(Object value) {
         Object[] objects = Arrays.stream(value.getClass().getDeclaredFields()).filter(
@@ -279,6 +287,12 @@ public class PostgreDataBaseService {
         return objects;
     }
 
+    /**
+     * Переводит поля класса-таблицы в тело таблицы fields... : 'create table name(fields.....)'
+     *
+     * @param type класс-таблицы
+     * @return строка шаблон
+     */
     @SneakyThrows
     private String makeFieldsSql(Class<?> type) {
         StringBuilder fields = new StringBuilder();
@@ -290,6 +304,13 @@ public class PostgreDataBaseService {
         return fields.toString();
     }
 
+    /**
+     * Переводит поле с аннотацией @Column в вид 'Long -> integer NOT NULL UNIQUE'
+     *
+     * @param field поле
+     * @param column аннотация поля
+     * @return строкое прелдставлнеие для Sql
+     */
     private String fieldToSql(Field field, Column column) {
         StringBuilder sqlFiled = new StringBuilder(",\n    ");
         sqlFiled.append(column.name()).append(" ").append(classToSql.get(field.getType().getName()));
@@ -300,6 +321,11 @@ public class PostgreDataBaseService {
         return sqlFiled.toString();
     }
 
+    /**
+     * Валидация класс-таблицы
+     *
+     * @param type
+     */
     private void validateTable(Class<?> type) {
         if (type.getAnnotation(Table.class).name().isEmpty())
             throw new RuntimeException("Table " + type.getName() + " has empty name");
@@ -395,6 +421,12 @@ public class PostgreDataBaseService {
         return exists;
     }
 
+    /**
+     * Создание шаблона вставки Sql в таблицу соответствующую таблицы в БД.
+     *
+     * @param clazz класс-таблица
+     * @return строка-шаблон
+     */
     private String makeInsertPattern(Class<?> clazz) {
         StringBuilder insertFields = new StringBuilder();
         StringBuilder values = new StringBuilder();

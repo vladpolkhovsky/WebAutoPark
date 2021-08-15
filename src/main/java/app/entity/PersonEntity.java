@@ -5,6 +5,8 @@ import summer.orm.annotations.Column;
 import summer.orm.annotations.ID;
 import summer.orm.annotations.Table;
 
+import java.sql.Date;
+
 @Table(name = "person")
 @Builder
 @Data
@@ -24,5 +26,8 @@ public class PersonEntity {
 
     @Column(name = "age")
     Integer age;
+
+    @Column(name = "DOB")
+    Date date;
 
 }
