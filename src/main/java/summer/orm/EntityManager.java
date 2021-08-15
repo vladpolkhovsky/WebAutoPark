@@ -1,6 +1,7 @@
 package summer.orm;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EntityManager {
 
@@ -12,7 +13,7 @@ public interface EntityManager {
      * @param <T>   параметр класса
      * @return объект с Указанным id из БД
      */
-    <T> T get(Long id, Class<T> clazz);
+    <T> Optional<T> get(Long id, Class<T> clazz);
 
     /**
      * Сохранение объекта в БД

@@ -9,11 +9,13 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum SqlFieldType {
-    INTEGER(Integer.class, "integer"),
-    LONG(Long.class, "integer"),
-    STRING(String.class, "varchar(255)");
+    INTEGER(Integer.class, "integer", "%s"),
+    LONG(Long.class, "integer", "%s"),
+    STRING(String.class, "varchar(255)", "'%s'");
 
     private final Class<?> type;
 
     private final String sqlType;
+    
+    private final String insertPattern;
 }

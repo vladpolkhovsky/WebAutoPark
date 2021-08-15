@@ -21,31 +21,25 @@ public class MainService {
     @InitMethod
     public void main() {
 
-        asyncMethod.method();
+        PersonEntity personEntity = PersonEntity.builder()
+                .fname(System.currentTimeMillis() + "")
+                .sname(System.currentTimeMillis() + "")
+                .age(10)
+                .build();
+        entityManager.save(personEntity);
 
-        System.out.println("hello");
+        CarEntity carEntity = CarEntity.builder()
+                .color("Black")
+                .build();
+        entityManager.save(carEntity);
 
-        System.out.println(asyncMethod.method2());
+        List<PersonEntity> personEntities = entityManager.getAll(PersonEntity.class);
+        List<CarEntity> carEntities = entityManager.getAll(CarEntity.class);
 
-//        PersonEntity personEntity = PersonEntity.builder()
-//                .fname(System.currentTimeMillis() + "")
-//                .sname(System.currentTimeMillis() + "")
-//                .age(10)
-//                .build();
-//        entityManager.save(personEntity);
-//
-//        CarEntity carEntity = CarEntity.builder()
-//                .color("Black")
-//                .build();
-//        entityManager.save(carEntity);
-//
-//        List<PersonEntity> personEntities = entityManager.getAll(PersonEntity.class);
-//        List<CarEntity> carEntities = entityManager.getAll(CarEntity.class);
-//
-//        System.out.println(carEntities);
-//        System.out.println(personEntities);
-//
-//        System.out.println(carEntity + " " + entityManager.get(carEntity.getIdCar(), carEntity.getClass()));
+        System.out.println(carEntities);
+        System.out.println(personEntities);
+
+        System.out.println(carEntity + " " + entityManager.get(carEntity.getIdCar(), carEntity.getClass()));
     }
 
 

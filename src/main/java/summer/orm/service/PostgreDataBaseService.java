@@ -9,12 +9,11 @@ import summer.orm.ConnectionFactory;
 import summer.orm.annotations.Column;
 import summer.orm.annotations.ID;
 import summer.orm.annotations.Table;
-import summer.orm.enums.SqlFieldInsertPattern;
 import summer.orm.enums.SqlFieldType;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -106,8 +105,8 @@ public class PostgreDataBaseService {
                 sqlFieldType -> sqlFieldType.getType().getName(), SqlFieldType::getSqlType
         ));
 
-        insertPatternByClass = Arrays.stream(SqlFieldInsertPattern.values()).collect(Collectors.toMap(
-                sqlFieldType -> sqlFieldType.getType().getName(), SqlFieldInsertPattern::getSqlType
+        insertPatternByClass = Arrays.stream(SqlFieldType.values()).collect(Collectors.toMap(
+                sqlFieldType -> sqlFieldType.getType().getName(), SqlFieldType::getInsertPattern
         ));
 
         //Создание последовательнсоти
@@ -116,6 +115,10 @@ public class PostgreDataBaseService {
         //Получение всех объектов-таблиц и их создание
         Set<Class<?>> typesAnnotatedWithTable = context.getConfig()
                 .getScanner().getReflections().getTypesAnnotatedWith(Table.class);
+
+        //Валидация таблиц
+        typesAnnotatedWithTable.forEach(this::validateTable);
+
         for (Class<?> type : typesAnnotatedWithTable) {
             boolean tableExists = isTableExist(type.getAnnotation(Table.class).name());
             log.info("Class {} annotated with @Table. Table exists -> {}",
@@ -123,9 +126,6 @@ public class PostgreDataBaseService {
             if (!tableExists)
                 createTable(type);
         }
-
-        //Создание таблиц
-        typesAnnotatedWithTable.forEach(this::validateTable);
 
         //Создание запросов вставки для таблиц
         insertByClassPattern = typesAnnotatedWithTable.stream().collect(Collectors.toMap(
@@ -146,7 +146,10 @@ public class PostgreDataBaseService {
                 .findFirst().get().getName();
         String sql = String.format(CREATE_TABLE_SQL_PATTERN, tableName, idField, SEQ_NAME, makeFieldsSql(type));
         log.info("SQL -> {}", sql);
-        connectionFactory.getConnection().createStatement().execute(sql);
+
+        Statement statement = connectionFactory.getConnection().createStatement();
+        statement.execute(sql);
+        statement.close();
     }
 
     /**
@@ -159,14 +162,16 @@ public class PostgreDataBaseService {
     public Long save(Object value) {
         String sql = String.format(insertByClassPattern.get(value.getClass().getName()), prepareValues(value));
         log.info("SQL -> {}", sql);
-        ResultSet resultSet = connectionFactory.getConnection().createStatement().executeQuery(
-                sql
-        );
+
+        Statement statement = connectionFactory.getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
         resultSet.next();
         Field idField = Arrays.stream(value.getClass().getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(ID.class))
                 .findFirst().get();
         Long id = resultSet.getLong(idField.getName());
+        statement.close();
+
         idField.setAccessible(true);
         idField.set(value, id);
         return id;
@@ -181,7 +186,7 @@ public class PostgreDataBaseService {
      * @return объект класса
      */
     @SneakyThrows
-    public <T> T get(Long id, Class<T> clazz) {
+    public <T> Optional<T> get(Long id, Class<T> clazz) {
         Table table = clazz.getAnnotation(Table.class);
         if (table == null)
             throw new RuntimeException("Class not annotated with @Table");
@@ -193,12 +198,13 @@ public class PostgreDataBaseService {
 
         log.info("SQL -> {}", sql);
 
-        ResultSet result = connectionFactory.getConnection().createStatement().executeQuery(sql);
-
+        Statement statement = connectionFactory.getConnection().createStatement();
+        ResultSet result = statement.executeQuery(sql);
         if (result.next())
-            return makeObject(result, clazz);
+            return Optional.of(makeObject(result, clazz));
+        statement.close();
 
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -214,12 +220,14 @@ public class PostgreDataBaseService {
         if (table == null)
             throw new RuntimeException("Class not annotated with @Table");
         String sql = "SELECT * FROM " + table.name();
-        log.error("SQL -> {}", sql);
+        log.info("SQL -> {}", sql);
         List<T> list = new ArrayList<>();
-        ResultSet resultSet = connectionFactory.getConnection().createStatement().executeQuery(sql);
+        Statement statement = connectionFactory.getConnection().createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
         while (resultSet.next()) {
             list.add(makeObject(resultSet, clazz));
         }
+        statement.close();
         return list;
     }
 
@@ -293,9 +301,39 @@ public class PostgreDataBaseService {
     }
 
     private void validateTable(Class<?> type) {
+        if (type.getAnnotation(Table.class).name().isEmpty())
+            throw new RuntimeException("Table " + type.getName() + " has empty name");
         validateId(type);
+        validateColumns(type);
     }
 
+    /**
+     * Проверка колонок на совпадение имён и на допустимость типов
+     *
+     * @param type класс-таблица
+     */
+    private void validateColumns(Class<?> type) {
+        Set<String> validateColumns = new HashSet<>();
+        List<Field> columns = Arrays.stream(type.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(ID.class) || field.isAnnotationPresent(Column.class))
+                .collect(Collectors.toList());
+        columns.forEach(field -> {
+            if (!insertPatternByClass.containsKey(field.getType().getName()))
+                throw new RuntimeException("Table " + type.getName() + " has column with illegal type " + field.getType().getName());
+            ID id = field.getAnnotation(ID.class);
+            Column column = field.getAnnotation(Column.class);
+            String name = id == null ? column.name() : field.getName();
+            if (validateColumns.contains(name))
+                throw new RuntimeException("Table " + type.getName() + " has 2 or more columns with same name '" + name + "'");
+            validateColumns.add(name);
+        });
+    }
+
+    /**
+     * Проверка поля ID.
+     *
+     * @param type
+     */
     private void validateId(Class<?> type) {
         List<Field> idFields = Arrays.stream(type.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(ID.class))
@@ -307,35 +345,54 @@ public class PostgreDataBaseService {
             throw new RuntimeException(String.format("@ID field '%s' has illegal type. Use Long type", idField.getName()));
     }
 
+    /**
+     * Проверка последовательности на существование и её создание
+     */
     @SneakyThrows
     private void validateSeq() {
         if (!isSeqExist()) {
             String sqlSeq = String.format(CREATE_ID_SEQ_PATTERN, SEQ_NAME);
             log.info("SQL -> {}", sqlSeq);
-            connectionFactory.getConnection().createStatement().execute(sqlSeq);
+            Statement statement = connectionFactory.getConnection().createStatement();
+            statement.execute(sqlSeq);
+            statement.close();
         }
     }
 
+    /**
+     * Проверка последовательности на существование
+     *
+     * @return true если последовательность существует
+     */
     @SneakyThrows
     private boolean isSeqExist() {
-        Connection connection = connectionFactory.getConnection();
+        Statement statement = connectionFactory.getConnection().createStatement();
         String sql = String.format(CHECK_SEQ_SQL_PATTERN, SEQ_NAME);
         log.info("SQL -> {}", sql);
-        ResultSet resultSet = connection.createStatement().executeQuery(sql);
+        ResultSet resultSet = statement.executeQuery(sql);
         resultSet.next();
         boolean exists = resultSet.getBoolean("exists");
         log.info("Sequence {}. Sequence exists -> {}", SEQ_NAME, exists);
+        statement.close();
         return exists;
     }
 
+    /**
+     * Проверка таблицы на существование
+     *
+     * @param tableName название таблицы
+     * @return true если таблица существует
+     */
     @SneakyThrows
     private boolean isTableExist(String tableName) {
-        Connection connection = connectionFactory.getConnection();
+        Statement statement = connectionFactory.getConnection().createStatement();
         String sql = String.format(CHECK_TABLE_SQL_PATTERN, tableName);
         log.info("SQL -> {}", sql);
-        ResultSet resultSet = connection.createStatement().executeQuery(sql);
+        ResultSet resultSet = statement.executeQuery(sql);
         resultSet.next();
-        return resultSet.getBoolean("exists");
+        boolean exists = resultSet.getBoolean("exists");
+        statement.close();
+        return exists;
     }
 
     private String makeInsertPattern(Class<?> clazz) {

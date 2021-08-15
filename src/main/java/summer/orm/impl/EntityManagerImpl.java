@@ -8,6 +8,7 @@ import summer.orm.EntityManager;
 import summer.orm.service.PostgreDataBaseService;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Отвечает за взаимдействие с БД.
@@ -26,7 +27,7 @@ public class EntityManagerImpl implements EntityManager {
     private Context context;
 
     @Override
-    public <T> T get(Long id, Class<T> clazz) {
+    public <T> Optional<T> get(Long id, Class<T> clazz) {
         return dataBaseService.get(id, clazz);
     }
 
