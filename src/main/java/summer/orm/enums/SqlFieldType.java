@@ -12,8 +12,11 @@ import java.sql.Date;
 @Getter
 public enum SqlFieldType {
     INTEGER(Integer.class, "integer", "%s"),
+
     LONG(Long.class, "integer", "%s"),
+
     STRING(String.class, "varchar(255)", "'%s'"),
+
     DATE(Date.class, "date", "'%s'");
 
     private final Class<?> type;

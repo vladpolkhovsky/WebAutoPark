@@ -1,7 +1,9 @@
 package summer.threads.configurators;
 
 import lombok.SneakyThrows;
-import net.sf.cglib.proxy.*;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import summer.configurators.ProxyConfigurator;
 import summer.core.Context;
 import summer.threads.annotations.Async;
