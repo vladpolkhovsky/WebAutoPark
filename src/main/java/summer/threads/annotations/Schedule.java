@@ -4,10 +4,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- *  Цепляется на метод, который обязан быть асинхронным.
- *  Важно что метод должен быть public.
+ * Метод отвечает за регулярный вызов функции с разницей в delta ms.
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Async {
+public @interface Schedule {
+    int delta();
     int timeout() default Integer.MAX_VALUE;
 }
